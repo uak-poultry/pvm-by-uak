@@ -1,0 +1,1968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PVM by UAK - Poultry Vaccine Manager | Passion Made Profession</title>
+  
+  <!-- PWA META TAGS & MANIFEST -->
+  <meta name="theme-color" content="#2e7d32">
+  <meta name="description" content="PVM by UAK - Passion Made Profession. AI-powered poultry vaccine schedule management by Dr. Usman Ali">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- iOS Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="PVM by UAK">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><defs><linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%232e7d32'/><stop offset='100%' stop-color='%230288d1'/></linearGradient></defs><rect width='180' height='180' fill='url(%23bg)' rx='35'/><path d='M90 45 C75 45 65 60 65 75 C65 90 75 105 90 105 C105 105 115 90 115 75 C115 60 105 45 90 45 Z' fill='%23ffb300'/><path d='M115 75 L130 65 L135 70 L120 80 Z' fill='%23ffb300'/><circle cx='85' cy='70' r='5' fill='%23333'/><circle cx='95' cy='70' r='5' fill='%23333'/><text x='90' y='140' font-family='Arial' font-size='28' font-weight='bold' text-anchor='middle' fill='white'>PVM</text><text x='90' y='160' font-family='Arial' font-size='12' text-anchor='middle' fill='%23ffeb3b'>UAK</text></svg>">
+  
+  <!-- Microsoft Tile Color -->
+  <meta name="msapplication-TileColor" content="#2e7d32">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='bg2' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' stop-color='%232e7d32'/><stop offset='100%' stop-color='%230288d1'/></linearGradient></defs><rect width='100' height='100' fill='url(%23bg2)' rx='20'/><circle cx='50' cy='40' r='12' fill='%23ffb300'/><path d='M50 50 L40 65 L35 72 L50 62 L65 72 L60 65 Z' fill='%23ffb300'/><circle cx='45' cy='38' r='2' fill='%23333'/><circle cx='55' cy='38' r='2' fill='%23333'/><text x='50' y='88' font-family='Arial' font-size='16' font-weight='bold' text-anchor='middle' fill='white'>PVM</text></svg>">
+
+  <style>
+    /* === CSS VARIABLES & RESET === */
+    :root {
+      --primary-green: #2e7d32;
+      --primary-blue: #0288d1;
+      --accent-yellow: #ffb300;
+      --danger-red: #e53935;
+      --success-green: #4caf50;
+      --text-dark: #333;
+      --text-light: #fff;
+      --bg-light: #f9fdf9;
+      --shadow: 0 4px 12px rgba(0,0,0,0.1);
+      --radius: 8px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, var(--bg-light), #e0f7fa);
+      color: var(--text-dark);
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    /* === UAK BRAND STYLING === */
+    .uak-brand-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .uak-logo-preview {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, var(--primary-green), var(--primary-blue));
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4);
+      border: 3px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .uak-logo-preview .main-text {
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 800;
+    }
+
+    .uak-logo-preview .sub-text {
+      font-size: 11px;
+      color: #ffeb3b;
+      margin-top: 3px;
+      font-weight: 600;
+    }
+
+    .uak-tagline {
+      font-style: italic;
+      color: rgba(255,255,255,0.9);
+      margin-top: 5px;
+      font-size: 1em;
+      font-weight: 500;
+    }
+
+    /* === LAYOUT & PAGE MANAGEMENT === */
+    .page {
+      display: none;
+      padding: 20px;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* === COMMON COMPONENTS === */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .content-box {
+      padding: 30px;
+    }
+
+    .header-gradient {
+      background: linear-gradient(90deg, var(--primary-green), var(--primary-blue));
+      color: var(--text-light);
+      padding: 30px;
+      text-align: center;
+    }
+
+    .main-heading {
+      font-size: 2.3em;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+
+    .sub-heading {
+      font-size: 1.2em;
+      font-weight: 400;
+      opacity: 0.95;
+    }
+
+    .heading-underline {
+      width: 200px;
+      height: 6px;
+      background: linear-gradient(90deg, #ffd54f, var(--accent-yellow));
+      margin: 15px auto 25px;
+      border-radius: 3px;
+    }
+
+    .calculator-title {
+      text-align: center;
+      font-size: 1.8em;
+      background: linear-gradient(90deg, var(--primary-green), var(--primary-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 5px;
+    }
+
+    .section-title {
+      font-size: 1.3em;
+      color: var(--primary-green);
+      margin: 25px 0 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    /* === FORM ELEMENTS === */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .form-col {
+      flex: 1;
+      min-width: 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--text-dark);
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: var(--radius);
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary-blue);
+      box-shadow: 0 0 0 3px rgba(2, 136, 209, 0.1);
+    }
+
+    input.error {
+      border-color: var(--danger-red);
+      background-color: #ffebee;
+    }
+
+    .error-message {
+      color: var(--danger-red);
+      font-size: 0.85em;
+      margin-top: 5px;
+      display: none;
+    }
+
+    /* === BUTTONS === */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(45deg, var(--primary-green), #4caf50);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(45deg, #1b5e20, var(--primary-green));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(46, 125, 50, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--primary-blue);
+      color: white;
+    }
+
+    .btn-secondary:hover {
+      background: #01579b;
+    }
+
+    .btn-danger {
+      background: var(--danger-red);
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #b71c1c;
+    }
+
+    .btn-warning {
+      background: #f57c00;
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: #e65100;
+    }
+
+    .btn-small {
+      padding: 8px 16px;
+      font-size: 14px;
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    /* === TOGGLE SWITCH === */
+    .toggle-group {
+      display: flex;
+      background: #f5f5f5;
+      border-radius: var(--radius);
+      padding: 4px;
+    }
+
+    .toggle-option {
+      flex: 1;
+      text-align: center;
+    }
+
+    .toggle-option input {
+      display: none;
+    }
+
+    .toggle-option label {
+      display: block;
+      padding: 10px;
+      border-radius: calc(var(--radius) - 2px);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 0;
+      font-weight: 500;
+    }
+
+    .toggle-option input:checked + label {
+      background: var(--primary-green);
+      color: white;
+    }
+
+    /* === TABLES === */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+
+    th, td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    th {
+      background: #f5f5f5;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    tr:hover {
+      background: #f9f9f9;
+    }
+
+    .result-cell {
+      background: #e8f5e9;
+      font-weight: 600;
+    }
+
+    .highlight {
+      background: #fff3e0;
+    }
+
+    /* === RESULTS & OUTPUT === */
+    .result-box {
+      background: #f1f8e9;
+      border-left: 4px solid var(--primary-green);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 25px;
+    }
+
+    .calculation-summary {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .result-item:last-child {
+      border-bottom: none;
+      font-weight: 600;
+      color: var(--primary-green);
+    }
+
+    /* === PRINT STYLES === */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      
+      .page.active,
+      .page.active * {
+        visibility: visible;
+      }
+      
+      .page.active {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: white;
+        padding: 20px;
+        margin: 0;
+      }
+      
+      .no-print {
+        display: none !important;
+      }
+      
+      .container {
+        box-shadow: none;
+        margin: 0;
+        max-width: 100%;
+        border: none;
+      }
+      
+      .header-gradient {
+        background: #2e7d32 !important;
+        -webkit-print-color-adjust: exact;
+        color: white;
+        padding: 20px;
+      }
+      
+      .content-box {
+        padding: 0;
+        margin-top: 20px;
+      }
+      
+      .print-table {
+        width: 100%;
+        margin: 20px 0;
+        display: block !important;
+      }
+      
+      .result-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        border: 2px solid #000;
+      }
+      
+      .result-table th,
+      .result-table td {
+        border: 1px solid #000;
+        padding: 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+      
+      .result-table th {
+        background: #f0f0f0 !important;
+        -webkit-print-color-adjust: exact;
+        font-weight: bold;
+        text-align: center;
+      }
+      
+      .result-table .highlight {
+        background: #e8f5e9 !important;
+        -webkit-print-color-adjust: exact;
+        font-weight: bold;
+      }
+      
+      .result-table .result-header {
+        background: #2e7d32 !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        font-size: 14px;
+        text-align: center;
+      }
+      
+      .btn {
+        display: none !important;
+      }
+      
+      .calculation-summary {
+        display: none;
+      }
+      
+      .professional-quote {
+        text-align: center;
+        font-style: italic;
+        margin-top: 30px;
+        color: #666;
+        font-size: 12px;
+      }
+
+      .live-results {
+        display: none !important;
+      }
+    }
+    
+    .print-table {
+      display: none;
+    }
+    
+    @media screen {
+      .print-table {
+        display: block;
+      }
+    }
+
+    /* === MODAL === */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: var(--radius);
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .modal-header {
+      padding: 20px;
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: 1.4em;
+      color: var(--primary-green);
+      margin: 0;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #777;
+    }
+
+    .close-btn:hover {
+      color: var(--text-dark);
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .modal-footer {
+      padding: 15px 20px;
+      border-top: 1px solid #e0e0e0;
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* === HOMEPAGE SPECIFIC === */
+    .homepage .intro {
+      text-align: center;
+      font-size: 1.2em;
+      max-width: 800px;
+      margin: 0 auto 50px;
+      color: #555;
+    }
+
+    .calculator-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      margin: 40px 0;
+    }
+
+    .calculator-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 30px;
+      text-align: center;
+      box-shadow: var(--shadow);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .calculator-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    .card-icon {
+      font-size: 3em;
+      margin-bottom: 20px;
+      color: var(--primary-green);
+    }
+
+    .card-title {
+      font-size: 1.4em;
+      margin-bottom: 15px;
+      color: var(--primary-green);
+    }
+
+    .card-description {
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    /* === FOOTER === */
+    footer {
+      text-align: center;
+      padding: 25px;
+      background: var(--primary-green);
+      color: white;
+      margin-top: 60px;
+    }
+
+    .professional-quote {
+      font-style: italic;
+      color: rgba(255,255,255,0.8);
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+
+    /* === RESPONSIVE DESIGN === */
+    @media (max-width: 768px) {
+      .form-row {
+        flex-direction: column;
+        gap: 0;
+      }
+      
+      .form-col {
+        margin-bottom: 15px;
+      }
+      
+      .calculator-cards {
+        grid-template-columns: 1fr;
+      }
+      
+      .main-heading {
+        font-size: 2em;
+      }
+      
+      .content-box {
+        padding: 20px;
+      }
+
+      .uak-brand-header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .uak-logo-preview {
+        width: 60px;
+        height: 60px;
+      }
+
+      .uak-logo-preview .main-text {
+        font-size: 18px;
+      }
+    }
+
+    /* === LIVE RESULTS STYLING === */
+    .live-results {
+      background: linear-gradient(135deg, #f8fffe, #e3f2fd);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-top: 20px;
+      border-left: 4px solid var(--primary-blue);
+    }
+
+    .live-result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #e0f7fa;
+    }
+
+    .live-result-item:last-child {
+      border-bottom: none;
+    }
+
+    .live-value {
+      font-weight: 600;
+      color: var(--primary-green);
+    }
+
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+
+    /* === PWA INSTALL PROMPT === */
+    .install-prompt {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: white;
+      border-radius: var(--radius);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+      padding: 15px;
+      z-index: 1000;
+      max-width: 300px;
+      border-left: 4px solid var(--primary-green);
+      display: none;
+    }
+
+    .install-prompt.show {
+      display: block;
+      animation: slideInUp 0.3s ease-out;
+    }
+
+    @keyframes slideInUp {
+      from { transform: translateY(100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .install-prompt p {
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .install-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .install-btn {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 14px;
+    }
+
+    .dismiss-btn {
+      background: #f5f5f5;
+      color: #666;
+    }
+
+    /* === UPLOAD AREA STYLING === */
+    .upload-area {
+      border: 2px dashed #ccc;
+      border-radius: var(--radius);
+      padding: 40px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+
+    .upload-area.dragover {
+      border-color: var(--primary-green);
+      background: #f8fff8;
+    }
+
+    .upload-placeholder {
+      color: #666;
+    }
+
+    .upload-icon {
+      font-size: 3em;
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .file-types {
+      font-size: 0.9em;
+      color: #999;
+      margin: 10px 0;
+    }
+
+    /* === VACCINE SCHEDULE STYLING === */
+    .vaccine-schedule-item {
+      background: #f8f9fa;
+      border: 1px solid #e9ecef;
+      border-radius: var(--radius);
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+
+    .vaccine-schedule-item.upcoming {
+      border-left: 4px solid var(--accent-yellow);
+      background: #fffbf0;
+    }
+
+    .vaccine-schedule-item.due {
+      border-left: 4px solid var(--danger-red);
+      background: #ffebee;
+    }
+
+    .vaccine-schedule-item.completed {
+      border-left: 4px solid var(--success-green);
+      background: #e8f5e9;
+      opacity: 0.7;
+    }
+
+    .flock-item {
+      background: white;
+      border: 1px solid #e0e0e0;
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .flock-item:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    /* === NOTIFICATION STYLING === */
+    .notification-item {
+      background: #fff3e0;
+      border-left: 4px solid var(--accent-yellow);
+      border-radius: var(--radius);
+      padding: 15px;
+      margin-bottom: 10px;
+    }
+
+    .notification-item.urgent {
+      background: #ffebee;
+      border-left-color: var(--danger-red);
+    }
+
+    /* === ROOSTER HEAD STYLING === */
+    .rooster-head {
+      font-size: 2.5em;
+      margin-right: 10px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+
+    .uak-header-main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+  </style>
+
+  <!-- External Libraries -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+  <!-- PWA Install Prompt -->
+  <div class="install-prompt" id="installPrompt">
+    <p>Install PVM by UAK ?</p>
+    <div class="install-buttons">
+      <button class="btn btn-primary install-btn" id="installButton">Install</button>
+      <button class="btn dismiss-btn install-btn" id="dismissButton">Later</button>
+    </div>
+  </div>
+
+  <!-- HOMEPAGE -->
+  <div id="homepage" class="page active">
+    <header class="header-gradient">
+      <div class="uak-brand-header">
+        <div class="uak-logo-preview">
+          <div class="main-text">PVM</div>
+          <div class="sub-text">by UAK</div>
+        </div>
+        <div>
+          <div class="uak-header-main">
+            <div class="rooster-head">🐔</div>
+            <h1 class="main-heading">POULTRY VACCINE MANAGER</h1>
+          </div>
+          <p class="sub-heading">Passion Made Profession</p>
+          <p class="uak-tagline">powered by ~ UAK POULTRY</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <div class="content-box">
+        <p class="intro">
+          Welcome to <strong>PVM by UAK</strong> - where passion meets profession in poultry vaccine management.  
+          AI-powered vaccine schedule analysis and reminder system for efficient poultry farming.
+          For any queries contact us @ <strong>uak.poultry@gmail.com</strong>.
+        </p>
+
+        <div class="calculator-cards">
+          <div class="calculator-card" onclick="PVMApp.showPage('upload-schedule')">
+            <div class="card-icon">📄</div>
+            <h3 class="card-title">Upload Vaccine Schedule</h3>
+            <p class="card-description">Upload PDF, Excel, or Word documents containing your vaccine schedule for AI analysis.</p>
+            <button class="btn btn-primary">Upload Schedule</button>
+          </div>
+
+          <div class="calculator-card" onclick="PVMApp.showPage('manage-flocks')">
+            <div class="card-icon">🏠</div>
+            <h3 class="card-title">Manage Flocks</h3>
+            <p class="card-description">Create and manage multiple flocks with different placement dates and schedules.</p>
+            <button class="btn btn-primary">Manage Flocks</button>
+          </div>
+
+          <div class="calculator-card" onclick="PVMApp.showPage('upcoming-vaccines')">
+            <div class="card-icon">📅</div>
+            <h3 class="card-title">Upcoming Vaccines</h3>
+            <p class="card-description">View all upcoming vaccines with smart reminders and notifications.</p>
+            <button class="btn btn-primary">View Schedule</button>
+          </div>
+
+          <div class="calculator-card" onclick="PVMApp.showPage('export-data')">
+            <div class="card-icon">📊</div>
+            <h3 class="card-title">Export Data</h3>
+            <p class="card-description">Export vaccine schedules and reports to Excel for record keeping.</p>
+            <button class="btn btn-primary">Export Data</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      © 2025 PVM by UAK | POULTRY VACCINE MANAGER |
+      ZAM-ZAM poultry wing, Shehbaz pur Road, Rahim Yar Khan, Punjab, Pakistan. |
+      <strong>uak.poultry@gmail.com</strong>
+      <div class="professional-quote">"<strong>BY A PROFESSIONAL - FOR THE PROFESSIONALS</strong>" ~Dr Usman Ali</div>
+    </footer>
+  </div>
+
+  <!-- UPLOAD SCHEDULE PAGE -->
+  <div id="upload-schedule" class="page">
+    <div class="container">
+      <div class="header-gradient">
+        <button class="btn btn-secondary no-print" onclick="PVMApp.showPage('homepage')">← Back to Home</button>
+        <div class="uak-header-main">
+          <div class="rooster-head">🐔</div>
+          <h1 class="main-heading">PVM</h1>
+        </div>
+        <p class="uak-tagline">powered by ~ UAK POULTRY</p>
+      </div>
+
+      <div class="content-box">
+        <h2 class="calculator-title">Upload Vaccine Schedule</h2>
+        <div class="heading-underline"></div>
+
+        <div class="upload-area" id="uploadArea">
+          <input type="file" id="fileInput" accept=".pdf,.xlsx,.xls,.docx,.doc" hidden>
+          <div class="upload-placeholder">
+            <span class="upload-icon">📁</span>
+            <h3>Drop your vaccine schedule document here</h3>
+            <p class="file-types">Supported formats: PDF, Excel (.xlsx, .xls), Word (.docx, .doc)</p>
+            <p>Or click to select a file</p>
+            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+              Choose File
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="schedule-name">Schedule Name (Optional)</label>
+          <input type="text" id="schedule-name" placeholder="e.g., Broiler Vaccine Schedule 2025">
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="ScheduleManager.processDocument()">Analyze Document</button>
+          <button class="btn btn-secondary" onclick="ScheduleManager.resetUpload()">Reset</button>
+        </div>
+
+        <div class="result-box" id="parsed-results" style="display: none;">
+          <h3 class="section-title">Parsed Vaccine Schedule</h3>
+          <div id="parsed-content"></div>
+          <div class="btn-group">
+            <button class="btn btn-primary" onclick="PVMApp.showPage('manage-flocks')">Use This Schedule</button>
+            <button class="btn btn-secondary" onclick="ScheduleManager.saveSchedule()">Save Schedule</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MANAGE FLOCKS PAGE -->
+  <div id="manage-flocks" class="page">
+    <div class="container">
+      <div class="header-gradient">
+        <button class="btn btn-secondary no-print" onclick="PVMApp.showPage('homepage')">← Back to Home</button>
+        <div class="uak-header-main">
+          <div class="rooster-head">🐔</div>
+          <h1 class="main-heading">PVM</h1>
+        </div>
+        <p class="uak-tagline">powered by ~ UAK POULTRY</p>
+      </div>
+
+      <div class="content-box">
+        <h2 class="calculator-title">Manage Flocks</h2>
+        <div class="heading-underline"></div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="FlockManager.showAddFlockModal()">+ Add New Flock</button>
+          <button class="btn btn-secondary" onclick="FlockManager.refreshFlocks()">Refresh</button>
+        </div>
+
+        <div id="flocks-list" class="flocks-container">
+          <!-- Flocks will be dynamically added here -->
+        </div>
+
+        <div id="no-flocks-message" style="text-align: center; padding: 40px; color: #666;">
+          <p>No flocks added yet. Click "Add New Flock" to get started.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPCOMING VACCINES PAGE -->
+  <div id="upcoming-vaccines" class="page">
+    <div class="container">
+      <div class="header-gradient">
+        <button class="btn btn-secondary no-print" onclick="PVMApp.showPage('homepage')">← Back to Home</button>
+        <div class="uak-header-main">
+          <div class="rooster-head">🐔</div>
+          <h1 class="main-heading">PVM</h1>
+        </div>
+        <p class="uak-tagline">powered by ~ UAK POULTRY</p>
+      </div>
+
+      <div class="content-box">
+        <h2 class="calculator-title">Upcoming Vaccines</h2>
+        <div class="heading-underline"></div>
+
+        <div class="form-group">
+          <label for="upcoming-days">Show vaccines due in next (days):</label>
+          <select id="upcoming-days" onchange="VaccineReminder.updateUpcomingList()">
+            <option value="7">7 days</option>
+            <option value="14" selected>14 days</option>
+            <option value="30">30 days</option>
+            <option value="60">60 days</option>
+          </select>
+        </div>
+
+        <div id="upcoming-vaccines-list">
+          <!-- Upcoming vaccines will be dynamically added here -->
+        </div>
+
+        <div id="no-upcoming-message" style="text-align: center; padding: 40px; color: #666;">
+          <p>No upcoming vaccines found. Check your flock schedules and placement dates.</p>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="VaccineReminder.setupReminders()">Setup Reminders</button>
+          <button class="btn btn-secondary" onclick="window.print()">Print Schedule</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXPORT DATA PAGE -->
+  <div id="export-data" class="page">
+    <div class="container">
+      <div class="header-gradient">
+        <button class="btn btn-secondary no-print" onclick="PVMApp.showPage('homepage')">← Back to Home</button>
+        <div class="uak-header-main">
+          <div class="rooster-head">🐔</div>
+          <h1 class="main-heading">PVM</h1>
+        </div>
+        <p class="uak-tagline">powered by ~ UAK POULTRY</p>
+      </div>
+
+      <div class="content-box">
+        <h2 class="calculator-title">Export Data</h2>
+        <div class="heading-underline"></div>
+
+        <div class="form-group">
+          <label for="export-format">Export Format:</label>
+          <select id="export-format">
+            <option value="excel">Excel (.xlsx)</option>
+            <option value="csv">CSV</option>
+            <option value="pdf">PDF</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="export-range">Data Range:</label>
+          <select id="export-range">
+            <option value="all">All Data</option>
+            <option value="upcoming">Upcoming Vaccines Only</option>
+            <option value="completed">Completed Vaccines Only</option>
+            <option value="flock">Specific Flock</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="flock-select-group" style="display: none;">
+          <label for="export-flock">Select Flock:</label>
+          <select id="export-flock">
+            <!-- Flocks will be populated dynamically -->
+          </select>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-primary" onclick="DataExporter.exportData()">Export Data</button>
+          <button class="btn btn-secondary" onclick="DataExporter.previewExport()">Preview</button>
+        </div>
+
+        <div id="export-preview" class="result-box" style="display: none;">
+          <h3 class="section-title">Export Preview</h3>
+          <div id="export-preview-content"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD FLOCK MODAL -->
+  <div class="modal" id="add-flock-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Add New Flock</h3>
+        <button class="close-btn" onclick="FlockManager.hideAddFlockModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="add-flock-form">
+          <div class="form-group">
+            <label for="flock-name">Flock Name *</label>
+            <input type="text" id="flock-name" required placeholder="e.g., Broiler Batch 25A">
+          </div>
+
+          <div class="form-group">
+            <label for="placement-date">Placement Date *</label>
+            <input type="date" id="placement-date" required>
+          </div>
+
+          <div class="form-group">
+            <label>Chick Type</label>
+            <div class="toggle-group">
+              <div class="toggle-option">
+                <input type="radio" id="day-old" name="chick-type" value="day-old" checked>
+                <label for="day-old">Day Old</label>
+              </div>
+              <div class="toggle-option">
+                <input type="radio" id="specific-age" name="chick-type" value="specific-age">
+                <label for="specific-age">Specific Age</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group" id="initial-age-group" style="display: none;">
+            <label for="initial-age">Initial Age (days)</label>
+            <input type="number" id="initial-age" min="1" value="1">
+          </div>
+
+          <div class="form-group">
+            <label for="selected-schedule">Vaccine Schedule *</label>
+            <select id="selected-schedule" required>
+              <option value="">Select a schedule</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="flock-notes">Notes (Optional)</label>
+            <textarea id="flock-notes" rows="3" placeholder="Any additional notes about this flock..."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="FlockManager.hideAddFlockModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="FlockManager.saveFlock()">Save Flock</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===============================
+    // PWA FUNCTIONALITY
+    // ===============================
+    const PWA = {
+      init: function() {
+        this.registerServiceWorker();
+        this.setupInstallPrompt();
+      },
+
+      registerServiceWorker: function() {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('PVM by UAK: Service Worker registered');
+            })
+            .catch(error => {
+              console.log('PVM by UAK: Service Worker registration failed:', error);
+            });
+        }
+      },
+
+      setupInstallPrompt: function() {
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const installButton = document.getElementById('installButton');
+        const dismissButton = document.getElementById('dismissButton');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          deferredPrompt = e;
+          
+          setTimeout(() => {
+            installPrompt.classList.add('show');
+          }, 5000);
+        });
+
+        installButton.addEventListener('click', async () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+              console.log('PVM by UAK: User installed the app');
+            }
+            deferredPrompt = null;
+            installPrompt.classList.remove('show');
+          }
+        });
+
+        dismissButton.addEventListener('click', () => {
+          installPrompt.classList.remove('show');
+        });
+
+        window.addEventListener('appinstalled', () => {
+          deferredPrompt = null;
+          installPrompt.classList.remove('show');
+        });
+      }
+    };
+
+    // ===============================
+    // MAIN APPLICATION MODULE
+    // ===============================
+    const PVMApp = (function() {
+      'use strict';
+      
+      return {
+        showPage: function(pageId) {
+          document.querySelectorAll('.page').forEach(page => {
+            page.classList.remove('active');
+          });
+          document.getElementById(pageId).classList.add('active');
+          window.scrollTo(0, 0);
+          
+          // Page-specific initializations
+          if (pageId === 'manage-flocks') {
+            FlockManager.loadFlocks();
+          } else if (pageId === 'upcoming-vaccines') {
+            VaccineReminder.updateUpcomingList();
+          } else if (pageId === 'export-data') {
+            DataExporter.initExportPage();
+          }
+        },
+        
+        formatNumber: function(num, decimals = 2) {
+          return parseFloat(num).toFixed(decimals);
+        },
+        
+        escapeHtml: function(text) {
+          const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+          };
+          return String(text).replace(/[&<>"']/g, m => map[m]);
+        },
+        
+        showNotification: function(message, type = 'info') {
+          // Simple notification implementation
+          alert(message); // Replace with toast notification in production
+        }
+      };
+    })();
+
+    // ===============================
+    // SCHEDULE MANAGER MODULE
+    // ===============================
+    const ScheduleManager = (function() {
+      'use strict';
+      
+      let currentSchedule = null;
+      
+      function init() {
+        // Setup drag and drop
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+          uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+          e.preventDefault();
+          uploadArea.classList.remove('dragover');
+          if (e.dataTransfer.files.length > 0) {
+            fileInput.files = e.dataTransfer.files;
+            processDocument();
+          }
+        });
+        
+        fileInput.addEventListener('change', processDocument);
+      }
+      
+      function processDocument() {
+        const fileInput = document.getElementById('fileInput');
+        const file = fileInput.files[0];
+        
+        if (!file) {
+          PVMApp.showNotification('Please select a file first.', 'error');
+          return;
+        }
+        
+        const fileName = file.name.toLowerCase();
+        const scheduleName = document.getElementById('schedule-name').value || file.name;
+        
+        PVMApp.showNotification('Processing document...', 'info');
+        
+        // Simulate AI processing (replace with actual AI processing)
+        setTimeout(() => {
+          // Mock parsed vaccine data
+          const mockVaccines = [
+            { vaccineName: "Newcastle Disease", route: "Spray", scheduledAgeDays: 7 },
+            { vaccineName: "Infectious Bronchitis", route: "Water", scheduledAgeDays: 14 },
+            { vaccineName: "Gumboro", route: "Water", scheduledAgeDays: 21 },
+            { vaccineName: "Fowl Pox", route: "Wing Web", scheduledAgeDays: 28 },
+            { vaccineName: "Newcastle Disease Booster", route: "Water", scheduledAgeDays: 35 }
+          ];
+          
+          currentSchedule = {
+            id: Date.now().toString(),
+            name: scheduleName,
+            fileName: file.name,
+            uploadDate: new Date().toISOString(),
+            vaccines: mockVaccines
+          };
+          
+          displayParsedResults(mockVaccines);
+          PVMApp.showNotification('Schedule parsed successfully!', 'success');
+        }, 2000);
+      }
+      
+      function displayParsedResults(vaccines) {
+        const resultsDiv = document.getElementById('parsed-results');
+        const contentDiv = document.getElementById('parsed-content');
+        
+        let html = `
+          <div class="calculation-summary">
+            <div class="result-item">
+              <span>Schedule Name:</span>
+              <span>${PVMApp.escapeHtml(currentSchedule.name)}</span>
+            </div>
+            <div class="result-item">
+              <span>File Name:</span>
+              <span>${PVMApp.escapeHtml(currentSchedule.fileName)}</span>
+            </div>
+            <div class="result-item">
+              <span>Total Vaccines Found:</span>
+              <span>${vaccines.length}</span>
+            </div>
+          </div>
+          
+          <h4 style="margin: 20px 0 10px 0;">Vaccine Schedule:</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Vaccine Name</th>
+                <th>Route</th>
+                <th>Scheduled Age (Days)</th>
+              </tr>
+            </thead>
+            <tbody>
+        `;
+        
+        vaccines.forEach(vaccine => {
+          html += `
+            <tr>
+              <td>${PVMApp.escapeHtml(vaccine.vaccineName)}</td>
+              <td>${PVMApp.escapeHtml(vaccine.route)}</td>
+              <td>${vaccine.scheduledAgeDays}</td>
+            </tr>
+          `;
+        });
+        
+        html += `</tbody></table>`;
+        contentDiv.innerHTML = html;
+        resultsDiv.style.display = 'block';
+      }
+      
+      function saveSchedule() {
+        if (!currentSchedule) {
+          PVMApp.showNotification('No schedule to save.', 'error');
+          return;
+        }
+        
+        const schedules = JSON.parse(localStorage.getItem('pvm-schedules') || '[]');
+        schedules.push(currentSchedule);
+        localStorage.setItem('pvm-schedules', JSON.stringify(schedules));
+        
+        PVMApp.showNotification('Schedule saved successfully!', 'success');
+        PVMApp.showPage('manage-flocks');
+      }
+      
+      function resetUpload() {
+        document.getElementById('fileInput').value = '';
+        document.getElementById('schedule-name').value = '';
+        document.getElementById('parsed-results').style.display = 'none';
+        currentSchedule = null;
+      }
+      
+      function getSchedules() {
+        return JSON.parse(localStorage.getItem('pvm-schedules') || '[]');
+      }
+      
+      document.addEventListener('DOMContentLoaded', init);
+      
+      return {
+        processDocument: processDocument,
+        resetUpload: resetUpload,
+        saveSchedule: saveSchedule,
+        getSchedules: getSchedules
+      };
+    })();
+
+    // ===============================
+    // FLOCK MANAGER MODULE
+    // ===============================
+    const FlockManager = (function() {
+      'use strict';
+      
+      function init() {
+        // Setup chick type toggle
+        document.querySelectorAll('input[name="chick-type"]').forEach(radio => {
+          radio.addEventListener('change', function() {
+            document.getElementById('initial-age-group').style.display = 
+              this.value === 'specific-age' ? 'block' : 'none';
+          });
+        });
+        
+        loadFlocks();
+      }
+      
+      function showAddFlockModal() {
+        const schedules = ScheduleManager.getSchedules();
+        const scheduleSelect = document.getElementById('selected-schedule');
+        
+        scheduleSelect.innerHTML = '<option value="">Select a schedule</option>';
+        schedules.forEach(schedule => {
+          const option = document.createElement('option');
+          option.value = schedule.id;
+          option.textContent = schedule.name;
+          scheduleSelect.appendChild(option);
+        });
+        
+        if (schedules.length === 0) {
+          PVMApp.showNotification('Please upload a vaccine schedule first.', 'warning');
+          PVMApp.showPage('upload-schedule');
+          return;
+        }
+        
+        document.getElementById('add-flock-modal').classList.add('active');
+      }
+      
+      function hideAddFlockModal() {
+        document.getElementById('add-flock-modal').classList.remove('active');
+        document.getElementById('add-flock-form').reset();
+        document.getElementById('initial-age-group').style.display = 'none';
+      }
+      
+      function saveFlock() {
+        const form = document.getElementById('add-flock-form');
+        const formData = new FormData(form);
+        
+        const flockName = document.getElementById('flock-name').value.trim();
+        const placementDate = document.getElementById('placement-date').value;
+        const chickType = document.querySelector('input[name="chick-type"]:checked').value;
+        const initialAge = chickType === 'specific-age' ? parseInt(document.getElementById('initial-age').value) || 0 : 0;
+        const scheduleId = document.getElementById('selected-schedule').value;
+        const notes = document.getElementById('flock-notes').value.trim();
+        
+        if (!flockName || !placementDate || !scheduleId) {
+          PVMApp.showNotification('Please fill in all required fields.', 'error');
+          return;
+        }
+        
+        const schedules = ScheduleManager.getSchedules();
+        const selectedSchedule = schedules.find(s => s.id === scheduleId);
+        
+        if (!selectedSchedule) {
+          PVMApp.showNotification('Selected schedule not found.', 'error');
+          return;
+        }
+        
+        const flock = {
+          id: Date.now().toString(),
+          name: flockName,
+          placementDate: placementDate,
+          chickType: chickType,
+          initialAge: initialAge,
+          scheduleId: scheduleId,
+          notes: notes,
+          createdDate: new Date().toISOString(),
+          vaccineSchedule: calculateVaccineDates(selectedSchedule, placementDate, chickType, initialAge)
+        };
+        
+        const flocks = JSON.parse(localStorage.getItem('pvm-flocks') || '[]');
+        flocks.push(flock);
+        localStorage.setItem('pvm-flocks', JSON.stringify(flocks));
+        
+        hideAddFlockModal();
+        loadFlocks();
+        PVMApp.showNotification('Flock added successfully!', 'success');
+      }
+      
+      function calculateVaccineDates(schedule, placementDate, chickType, initialAge) {
+        const placement = new Date(placementDate);
+        
+        return schedule.vaccines.map(vaccine => {
+          const vaccineDate = new Date(placement);
+          const daysToAdd = vaccine.scheduledAgeDays - (chickType === 'day-old' ? 0 : initialAge);
+          vaccineDate.setDate(vaccineDate.getDate() + daysToAdd);
+          
+          return {
+            ...vaccine,
+            scheduledDate: vaccineDate.toISOString(),
+            completed: false,
+            actualDate: null,
+            notes: ''
+          };
+        });
+      }
+      
+      function loadFlocks() {
+        const flocks = JSON.parse(localStorage.getItem('pvm-flocks') || '[]');
+        const flocksList = document.getElementById('flocks-list');
+        const noFlocksMessage = document.getElementById('no-flocks-message');
+        
+        if (flocks.length === 0) {
+          flocksList.innerHTML = '';
+          noFlocksMessage.style.display = 'block';
+          return;
+        }
+        
+        noFlocksMessage.style.display = 'none';
+        
+        let html = '';
+        flocks.forEach(flock => {
+          const schedules = ScheduleManager.getSchedules();
+          const schedule = schedules.find(s => s.id === flock.scheduleId);
+          const completedVaccines = flock.vaccineSchedule.filter(v => v.completed).length;
+          const totalVaccines = flock.vaccineSchedule.length;
+          
+          html += `
+            <div class="flock-item">
+              <div style="display: flex; justify-content: between; align-items: start; margin-bottom: 15px;">
+                <div>
+                  <h3 style="margin: 0 0 5px 0; color: var(--primary-green);">${PVMApp.escapeHtml(flock.name)}</h3>
+                  <p style="margin: 0 0 5px 0; color: #666;">
+                    Placement: ${new Date(flock.placementDate).toLocaleDateString()} | 
+                    ${flock.chickType === 'day-old' ? 'Day Old' : 'Initial Age: ' + flock.initialAge + ' days'} |
+                    Schedule: ${schedule ? schedule.name : 'Unknown'}
+                  </p>
+                </div>
+                <div style="text-align: right;">
+                  <span style="background: var(--primary-green); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8em;">
+                    ${completedVaccines}/${totalVaccines} Vaccines
+                  </span>
+                </div>
+              </div>
+              
+              <div style="margin-bottom: 15px;">
+                <strong>Upcoming Vaccines:</strong>
+                <div style="margin-top: 8px;">
+          `;
+          
+          const today = new Date();
+          const upcomingVaccines = flock.vaccineSchedule
+            .filter(v => !v.completed && new Date(v.scheduledDate) >= today)
+            .slice(0, 3);
+            
+          if (upcomingVaccines.length > 0) {
+            upcomingVaccines.forEach(vaccine => {
+              const daysUntil = Math.ceil((new Date(vaccine.scheduledDate) - today) / (1000 * 60 * 60 * 24));
+              html += `
+                <span style="display: inline-block; background: #e3f2fd; color: var(--primary-blue); padding: 2px 8px; border-radius: 12px; font-size: 0.8em; margin-right: 5px; margin-bottom: 5px;">
+                  ${PVMApp.escapeHtml(vaccine.vaccineName)} (in ${daysUntil} days)
+                </span>
+              `;
+            });
+          } else {
+            html += `<span style="color: #666; font-style: italic;">No upcoming vaccines</span>`;
+          }
+          
+          html += `
+                </div>
+              </div>
+              
+              <div class="btn-group" style="margin-top: 10px;">
+                <button class="btn btn-small btn-primary" onclick="FlockManager.viewFlockDetails('${flock.id}')">View Details</button>
+                <button class="btn btn-small btn-secondary" onclick="FlockManager.editFlock('${flock.id}')">Edit</button>
+                <button class="btn btn-small btn-danger" onclick="FlockManager.deleteFlock('${flock.id}')">Delete</button>
+              </div>
+            </div>
+          `;
+        });
+        
+        flocksList.innerHTML = html;
+      }
+      
+      function viewFlockDetails(flockId) {
+        // Implementation for viewing flock details
+        PVMApp.showNotification('Flock details view - to be implemented', 'info');
+      }
+      
+      function editFlock(flockId) {
+        // Implementation for editing flock
+        PVMApp.showNotification('Flock edit - to be implemented', 'info');
+      }
+      
+      function deleteFlock(flockId) {
+        if (confirm('Are you sure you want to delete this flock? This action cannot be undone.')) {
+          const flocks = JSON.parse(localStorage.getItem('pvm-flocks') || '[]');
+          const updatedFlocks = flocks.filter(flock => flock.id !== flockId);
+          localStorage.setItem('pvm-flocks', JSON.stringify(updatedFlocks));
+          loadFlocks();
+          PVMApp.showNotification('Flock deleted successfully.', 'success');
+        }
+      }
+      
+      function refreshFlocks() {
+        loadFlocks();
+        PVMApp.showNotification('Flocks refreshed.', 'info');
+      }
+      
+      function getFlocks() {
+        return JSON.parse(localStorage.getItem('pvm-flocks') || '[]');
+      }
+      
+      document.addEventListener('DOMContentLoaded', init);
+      
+      return {
+        showAddFlockModal: showAddFlockModal,
+        hideAddFlockModal: hideAddFlockModal,
+        saveFlock: saveFlock,
+        loadFlocks: loadFlocks,
+        viewFlockDetails: viewFlockDetails,
+        editFlock: editFlock,
+        deleteFlock: deleteFlock,
+        refreshFlocks: refreshFlocks,
+        getFlocks: getFlocks
+      };
+    })();
+
+    // ===============================
+    // VACCINE REMINDER MODULE
+    // ===============================
+    const VaccineReminder = (function() {
+      'use strict';
+      
+      function updateUpcomingList() {
+        const days = parseInt(document.getElementById('upcoming-days').value);
+        const flocks = FlockManager.getFlocks();
+        const schedules = ScheduleManager.getSchedules();
+        const upcomingList = document.getElementById('upcoming-vaccines-list');
+        const noUpcomingMessage = document.getElementById('no-upcoming-message');
+        
+        let allUpcomingVaccines = [];
+        const today = new Date();
+        const targetDate = new Date();
+        targetDate.setDate(today.getDate() + days);
+        
+        flocks.forEach(flock => {
+          const schedule = schedules.find(s => s.id === flock.scheduleId);
+          if (!schedule) return;
+          
+          flock.vaccineSchedule.forEach(vaccine => {
+            if (!vaccine.completed) {
+              const vaccineDate = new Date(vaccine.scheduledDate);
+              if (vaccineDate >= today && vaccineDate <= targetDate) {
+                const daysUntil = Math.ceil((vaccineDate - today) / (1000 * 60 * 60 * 24));
+                allUpcomingVaccines.push({
+                  ...vaccine,
+                  flockName: flock.name,
+                  flockId: flock.id,
+                  daysUntil: daysUntil,
+                  scheduledDate: vaccine.scheduledDate
+                });
+              }
+            }
+          });
+        });
+        
+        // Sort by date
+        allUpcomingVaccines.sort((a, b) => new Date(a.scheduledDate) - new Date(b.scheduledDate));
+        
+        if (allUpcomingVaccines.length === 0) {
+          upcomingList.innerHTML = '';
+          noUpcomingMessage.style.display = 'block';
+          return;
+        }
+        
+        noUpcomingMessage.style.display = 'none';
+        
+        let html = '';
+        allUpcomingVaccines.forEach(vaccine => {
+          const urgencyClass = vaccine.daysUntil === 0 ? 'due' : vaccine.daysUntil <= 3 ? 'upcoming' : '';
+          const urgencyText = vaccine.daysUntil === 0 ? 'TODAY' : 
+                            vaccine.daysUntil === 1 ? 'Tomorrow' : 
+                            `In ${vaccine.daysUntil} days`;
+          
+          html += `
+            <div class="vaccine-schedule-item ${urgencyClass}">
+              <div style="display: flex; justify-content: between; align-items: start;">
+                <div style="flex: 1;">
+                  <h4 style="margin: 0 0 5px 0;">${PVMApp.escapeHtml(vaccine.vaccineName)}</h4>
+                  <p style="margin: 0 0 5px 0; color: #666;">
+                    <strong>Flock:</strong> ${PVMApp.escapeHtml(vaccine.flockName)} | 
+                    <strong>Route:</strong> ${PVMApp.escapeHtml(vaccine.route)} | 
+                    <strong>Date:</strong> ${new Date(vaccine.scheduledDate).toLocaleDateString()}
+                  </p>
+                  <p style="margin: 0; color: ${vaccine.daysUntil === 0 ? 'var(--danger-red)' : vaccine.daysUntil <= 3 ? 'var(--accent-yellow)' : 'var(--primary-green)'}; font-weight: bold;">
+                    ${urgencyText}
+                  </p>
+                </div>
+                <div>
+                  <button class="btn btn-small btn-primary" onclick="VaccineReminder.markCompleted('${vaccine.flockId}', '${vaccine.vaccineName}')">
+                    Mark Done
+                  </button>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        
+        upcomingList.innerHTML = html;
+      }
+      
+      function markCompleted(flockId, vaccineName) {
+        const flocks = JSON.parse(localStorage.getItem('pvm-flocks') || '[]');
+        const flockIndex = flocks.findIndex(f => f.id === flockId);
+        
+        if (flockIndex !== -1) {
+          const vaccineIndex = flocks[flockIndex].vaccineSchedule.findIndex(v => v.vaccineName === vaccineName);
+          if (vaccineIndex !== -1) {
+            flocks[flockIndex].vaccineSchedule[vaccineIndex].completed = true;
+            flocks[flockIndex].vaccineSchedule[vaccineIndex].actualDate = new Date().toISOString();
+            localStorage.setItem('pvm-flocks', JSON.stringify(flocks));
+            updateUpcomingList();
+            PVMApp.showNotification('Vaccine marked as completed!', 'success');
+          }
+        }
+      }
+      
+      function setupReminders() {
+        if ('Notification' in window) {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+              PVMApp.showNotification('Browser notifications enabled! You will receive reminders for upcoming vaccines.', 'success');
+            }
+          });
+        } else {
+          PVMApp.showNotification('Browser notifications not supported.', 'warning');
+        }
+      }
+      
+      return {
+        updateUpcomingList: updateUpcomingList,
+        markCompleted: markCompleted,
+        setupReminders: setupReminders
+      };
+    })();
+
+    // ===============================
+    // DATA EXPORTER MODULE
+    // ===============================
+    const DataExporter = (function() {
+      'use strict';
+      
+      function initExportPage() {
+        const flocks = FlockManager.getFlocks();
+        const flockSelect = document.getElementById('export-flock');
+        const rangeSelect = document.getElementById('export-range');
+        
+        // Populate flock select
+        flockSelect.innerHTML = '<option value="">Select a flock</option>';
+        flocks.forEach(flock => {
+          const option = document.createElement('option');
+          option.value = flock.id;
+          option.textContent = flock.name;
+          flockSelect.appendChild(option);
+        });
+        
+        // Show/hide flock select based on range
+        rangeSelect.addEventListener('change', function() {
+          document.getElementById('flock-select-group').style.display = 
+            this.value === 'flock' ? 'block' : 'none';
+        });
+      }
+      
+      function exportData() {
+        const format = document.getElementById('export-format').value;
+        const range = document.getElementById('export-range').value;
+        const flockId = document.getElementById('export-flock').value;
+        
+        const flocks = FlockManager.getFlocks();
+        const schedules = ScheduleManager.getSchedules();
+        
+        let exportData = [];
+        
+        if (range === 'flock' && flockId) {
+          const flock = flocks.find(f => f.id === flockId);
+          if (flock) {
+            exportData = [flock];
+          }
+        } else if (range === 'upcoming') {
+          exportData = flocks.map(flock => {
+            const schedule = schedules.find(s => s.id === flock.scheduleId);
+            return {
+              ...flock,
+              vaccineSchedule: flock.vaccineSchedule.filter(v => !v.completed)
+            };
+          });
+        } else if (range === 'completed') {
+          exportData = flocks.map(flock => {
+            const schedule = schedules.find(s => s.id === flock.scheduleId);
+            return {
+              ...flock,
+              vaccineSchedule: flock.vaccineSchedule.filter(v => v.completed)
+            };
+          });
+        } else {
+          exportData = flocks;
+        }
+        
+        if (exportData.length === 0) {
+          PVMApp.showNotification('No data to export.', 'warning');
+          return;
+        }
+        
+        if (format === 'excel') {
+          exportToExcel(exportData, schedules);
+        } else if (format === 'csv') {
+          exportToCSV(exportData, schedules);
+        } else {
+          exportToPDF(exportData, schedules);
+        }
+      }
+      
+      function exportToExcel(flocks, schedules) {
+        // Simplified Excel export implementation
+        PVMApp.showNotification('Excel export functionality would be implemented here', 'info');
+        
+        // In a real implementation, you would use a library like SheetJS
+        // to create and download an Excel file
+      }
+      
+      function exportToCSV(flocks, schedules) {
+        let csv = 'Flock Name,Placement Date,Vaccine,Route,Scheduled Age,Scheduled Date,Completed\n';
+        
+        flocks.forEach(flock => {
+          const schedule = schedules.find(s => s.id === flock.scheduleId);
+          flock.vaccineSchedule.forEach(vaccine => {
+            csv += `"${flock.name}","${flock.placementDate}","${vaccine.vaccineName}","${vaccine.route}",${vaccine.scheduledAgeDays},"${vaccine.scheduledDate}",${vaccine.completed}\n`;
+          });
+        });
+        
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `pvm_export_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        PVMApp.showNotification('CSV file downloaded successfully!', 'success');
+      }
+      
+      function exportToPDF(flocks, schedules) {
+        PVMApp.showNotification('PDF export functionality would be implemented here', 'info');
+      }
+      
+      function previewExport() {
+        const range = document.getElementById('export-range').value;
+        const flockId = document.getElementById('export-flock').value;
+        
+        const flocks = FlockManager.getFlocks();
+        const schedules = ScheduleManager.getSchedules();
+        
+        let previewData = [];
+        
+        if (range === 'flock' && flockId) {
+          const flock = flocks.find(f => f.id === flockId);
+          if (flock) {
+            previewData = [flock];
+          }
+        } else {
+          previewData = flocks;
+        }
+        
+        if (previewData.length === 0) {
+          PVMApp.showNotification('No data to preview.', 'warning');
+          return;
+        }
+        
+        let html = '<h4>Export Preview</h4>';
+        
+        previewData.forEach(flock => {
+          const schedule = schedules.find(s => s.id === flock.scheduleId);
+          html += `
+            <div style="margin-bottom: 20px; padding: 15px; background: #f5f5f5; border-radius: var(--radius);">
+              <h5 style="margin: 0 0 10px 0;">${PVMApp.escapeHtml(flock.name)}</h5>
+              <table style="width: 100%; font-size: 0.9em;">
+                <thead>
+                  <tr>
+                    <th>Vaccine</th>
+                    <th>Route</th>
+                    <th>Age</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+          `;
+          
+          flock.vaccineSchedule.forEach(vaccine => {
+            html += `
+              <tr>
+                <td>${PVMApp.escapeHtml(vaccine.vaccineName)}</td>
+                <td>${PVMApp.escapeHtml(vaccine.route)}</td>
+                <td>${vaccine.scheduledAgeDays} days</td>
+                <td>${new Date(vaccine.scheduledDate).toLocaleDateString()}</td>
+                <td>${vaccine.completed ? 'Completed' : 'Pending'}</td>
+              </tr>
+            `;
+          });
+          
+          html += `</tbody></table></div>`;
+        });
+        
+        document.getElementById('export-preview-content').innerHTML = html;
+        document.getElementById('export-preview').style.display = 'block';
+      }
+      
+      return {
+        initExportPage: initExportPage,
+        exportData: exportData,
+        previewExport: previewExport
+      };
+    })();
+
+    // Initialize the application
+    document.addEventListener('DOMContentLoaded', function() {
+      PWA.init();
+      console.log('PVM by UAK - Poultry Vaccine Manager initialized');
+    });
+  </script>
+</body>
+</html>
